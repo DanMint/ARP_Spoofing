@@ -1,0 +1,44 @@
+version: '3.9'
+
+networks:
+  arpnet:
+    name: arp_spoofing_network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24
+
+services:
+  victim:
+    build: ./
+    container_name: victim
+    command: sleep infinity
+    networks:
+      arpnet:
+        ipv4_address: 10.10.0.10
+    
+    volumes:
+      - ./victim:/app
+      - ./artifacts:/artifacts
+
+  defender:
+    build: ./
+    container_name: defender
+    command: sleep infinity
+    networks:
+      arpnet: 
+        ipv4_address: 10.10.0.11
+    volumes:
+      - ./defender:/app
+      - ./artifacts:/artifacts
+
+  attacker:
+    build: ./
+    container_name: attacker
+    command: sleep infinity
+    networks:
+      arpnet:
+        ipv4_address: 10.10.0.12
+    volumes:
+      - ./attacker:/app
+      - ./artifacts:/artifacts
